@@ -21,7 +21,7 @@ import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
-import io.ktor.server.plugins.calllogging.CallLogging
+import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.plugins.statuspages.StatusPages
