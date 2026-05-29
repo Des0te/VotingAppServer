@@ -167,7 +167,6 @@ class JdbcVotingRepository(private val config: DatabaseConfig) : VotingRepositor
         conn.prepareStatement(
             """
             select * from polls
-            where starts_at <= now() and ends_at >= now()
             order by starts_at desc
             limit ? offset ?
             """.trimIndent()

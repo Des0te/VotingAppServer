@@ -4,7 +4,6 @@ import com.votingapp.domain.Poll
 import com.votingapp.domain.PollResults
 import com.votingapp.domain.ResultOption
 import com.votingapp.domain.User
-import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -49,9 +48,7 @@ class InMemoryVotingRepository : VotingRepository {
     override fun findPollById(id: UUID): Poll? = polls[id]
 
     override fun activePolls(page: Int, size: Int): List<Poll> {
-        val now = Instant.now()
         return polls.values
-            .filter { !now.isBefore(it.startsAt) && !now.isAfter(it.endsAt) }
             .sortedByDescending { it.startsAt }
             .drop(page * size)
             .take(size)

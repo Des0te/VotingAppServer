@@ -74,6 +74,11 @@ class PollService(private val repository: VotingRepository) {
     }
 
     fun results(id: UUID): ResultsResponse {
+        val poll = repository.findPollById(id)
+            ?: throw AppException("Голосование не найдено", HttpStatusCode.NotFound)
+        if (poll.anonymous && Instant.now().isBefore(poll.endsAt)) {
+            throw AppException("Результаты анонимного голосования доступны после завершения", HttpStatusCode.Forbidden)
+        }
         return repository.results(id)?.toResponse()
             ?: throw AppException("Голосование не найдено", HttpStatusCode.NotFound)
     }
