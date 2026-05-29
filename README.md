@@ -1,30 +1,56 @@
-# server
+# VotingAppServer
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+Серверная часть приложения для голосований на Ktor.
 
-Here are some useful links to get you started:
+## Что есть
 
-* [Ktor Documentation](https://ktor.io/docs/home.html)
-* [Ktor GitHub page](https://github.com/ktorio/ktor)
-* [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). [Request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up).
+- регистрация и вход по JWT;
+- роли USER и ADMIN;
+- создание, редактирование до старта и удаление голосований;
+- активная лента, поиск, голосование и просмотр результатов;
+- JDBC-слой для PostgreSQL;
+- простое логирование запросов.
 
-## Features
+## База данных
 
-Here's a list of features included in this project:
+По умолчанию сервер ждёт PostgreSQL:
 
-| Name | Description |
-|------|-------------|
-
-## Building & Running
-
-To build or run the project, use one of the following tasks:
-
-| Task | Description |
-|------|-------------|
-
-If the server starts successfully, you'll see the following output:
-
+```text
+jdbc:postgresql://localhost:5432/voting_app
+user: postgres
+password: postgres
 ```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+
+Можно переопределить настройки через переменные окружения:
+
+```text
+DATABASE_URL
+DB_USER
+DB_PASSWORD
+JWT_SECRET
+PORT
 ```
+
+Таблицы создаются автоматически при старте приложения.
+
+## Запуск
+
+```bash
+./gradlew run
+```
+
+На Windows:
+
+```bat
+gradlew.bat run
+```
+
+Сервер запускается на `http://localhost:8080`.
+
+## Проверка
+
+```bash
+./gradlew build
+```
+
+Первый зарегистрированный пользователь получает роль ADMIN, остальные пользователи получают роль USER.
