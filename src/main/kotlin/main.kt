@@ -1,4 +1,4 @@
-package com.VotingApp
+package com.votingapp
 
 import io.ktor.server.engine.*
 import io.ktor.server.application.*
