@@ -13,7 +13,9 @@
 
 ## База данных
 
-По умолчанию сервер ждёт PostgreSQL:
+По умолчанию сервер работает в режиме `auto`: сначала пробует PostgreSQL, а если локальная база недоступна или не принимает пароль, запускает временную базу в памяти. Это удобно для запуска из IntelliJ IDEA без настройки PostgreSQL.
+
+Настройки PostgreSQL по умолчанию:
 
 ```text
 jdbc:postgresql://localhost:5432/voting_app
@@ -24,11 +26,24 @@ password: postgres
 Можно переопределить настройки через переменные окружения:
 
 ```text
+DB_MODE
 DATABASE_URL
 DB_USER
 DB_PASSWORD
 JWT_SECRET
 PORT
+```
+
+Для строгого запуска только с PostgreSQL укажите:
+
+```text
+DB_MODE=postgres
+```
+
+Для локального запуска без PostgreSQL:
+
+```text
+DB_MODE=memory
 ```
 
 Таблицы создаются автоматически при старте приложения.

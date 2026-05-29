@@ -16,6 +16,7 @@ data class AppConfig(
                     realm = config.value("ktor.jwt.realm", "VotingApp"),
                 ),
                 database = DatabaseConfig(
+                    mode = config.value("ktor.database.mode", "auto"),
                     url = config.value("ktor.database.url", "jdbc:postgresql://localhost:5432/voting_app"),
                     user = config.value("ktor.database.user", "postgres"),
                     password = config.value("ktor.database.password", "postgres"),
@@ -36,7 +37,14 @@ data class JwtConfig(
 )
 
 data class DatabaseConfig(
+    val mode: String,
     val url: String,
     val user: String,
     val password: String,
-)
+) {
+    val memoryMode: Boolean
+        get() = mode.equals("memory", ignoreCase = true)
+
+    val autoMode: Boolean
+        get() = mode.equals("auto", ignoreCase = true)
+}

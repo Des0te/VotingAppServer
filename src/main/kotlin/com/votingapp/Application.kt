@@ -1,6 +1,8 @@
 package com.votingapp
 
 import com.votingapp.data.AppConfig
+import com.votingapp.data.DatabaseConfig
+import com.votingapp.data.InMemoryVotingRepository
 import com.votingapp.data.JdbcVotingRepository
 import com.votingapp.data.VotingRepository
 import com.votingapp.routes.authRoutes
@@ -30,13 +32,21 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.slf4j.Logger
 import org.slf4j.event.Level
 
 fun Application.module(repository: VotingRepository? = null) {
     val appLog = environment.log
     val config = AppConfig.from(environment.config)
-    val repo = repository ?: JdbcVotingRepository(config.database)
-    repo.init()
+    var repo = repository ?: repository(config.database, appLog)
+    try {
+        repo.init()
+    } catch (e: Exception) {
+        if (repository != null || !config.database.autoMode) throw e
+        appLog.warn("PostgreSQL недоступен, сервер запущен с временной базой в памяти: ${e.message}")
+        repo = InMemoryVotingRepository()
+        repo.init()
+    }
 
     val tokenService = TokenService(config.jwt)
     val authService = AuthService(repo, tokenService)
@@ -98,3 +108,12 @@ fun Application.module(repository: VotingRepository? = null) {
 
 @Serializable
 data class ErrorResponse(val message: String)
+
+private fun repository(config: DatabaseConfig, log: Logger): VotingRepository {
+    return if (config.memoryMode) {
+        log.warn("Сервер запущен с временной базой в памяти")
+        InMemoryVotingRepository()
+    } else {
+        JdbcVotingRepository(config)
+    }
+}
