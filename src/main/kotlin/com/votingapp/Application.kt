@@ -33,7 +33,6 @@ import io.ktor.server.routing.routing
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.slf4j.Logger
-import org.slf4j.event.Level
 
 fun Application.module(repository: VotingRepository? = null) {
     val appLog = environment.log
@@ -43,7 +42,7 @@ fun Application.module(repository: VotingRepository? = null) {
         repo.init()
     } catch (e: Exception) {
         if (repository != null || !config.database.autoMode) throw e
-        appLog.warn("PostgreSQL недоступен, сервер запущен с временной базой в памяти: ${e.message}")
+        appLog.warn("Postgres is unavailable, using in-memory database. Check DB_MODE, DATABASE_URL, DB_USER and DB_PASSWORD.")
         repo = InMemoryVotingRepository()
         repo.init()
     }
@@ -63,7 +62,6 @@ fun Application.module(repository: VotingRepository? = null) {
     }
 
     install(CallLogging) {
-        level = Level.INFO
         format { call -> "${call.request.httpMethod.value} ${call.request.path()}" }
     }
 
@@ -111,7 +109,7 @@ data class ErrorResponse(val message: String)
 
 private fun repository(config: DatabaseConfig, log: Logger): VotingRepository {
     return if (config.memoryMode) {
-        log.warn("Сервер запущен с временной базой в памяти")
+        log.warn("Server is using in-memory database")
         InMemoryVotingRepository()
     } else {
         JdbcVotingRepository(config)
