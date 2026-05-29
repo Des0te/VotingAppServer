@@ -10,22 +10,25 @@ data class AppConfig(
         fun from(config: ApplicationConfig): AppConfig {
             return AppConfig(
                 jwt = JwtConfig(
-                    secret = config.value("ktor.jwt.secret", "dev-secret-change-before-production"),
+                    secret = env("JWT_SECRET") ?: config.value("ktor.jwt.secret", "dev-secret-change-before-production"),
                     issuer = config.value("ktor.jwt.issuer", "voting-server"),
                     audience = config.value("ktor.jwt.audience", "voting-client"),
                     realm = config.value("ktor.jwt.realm", "VotingApp"),
                 ),
                 database = DatabaseConfig(
-                    mode = config.value("ktor.database.mode", "auto"),
-                    url = config.value("ktor.database.url", "jdbc:postgresql://localhost:5432/voting_app"),
-                    user = config.value("ktor.database.user", "postgres"),
-                    password = config.value("ktor.database.password", "postgres"),
+                    mode = env("DB_MODE") ?: config.value("ktor.database.mode", "auto"),
+                    url = env("DATABASE_URL") ?: config.value("ktor.database.url", "jdbc:postgresql://localhost:5432/voting_app"),
+                    user = env("DB_USER") ?: config.value("ktor.database.user", "postgres"),
+                    password = env("DB_PASSWORD") ?: config.value("ktor.database.password", "postgres"),
                 )
             )
         }
 
         private fun ApplicationConfig.value(path: String, default: String): String =
             propertyOrNull(path)?.getString() ?: default
+
+        private fun env(name: String): String? =
+            System.getenv(name)?.takeIf { it.isNotBlank() }
     }
 }
 
