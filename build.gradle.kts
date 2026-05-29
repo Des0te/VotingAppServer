@@ -11,9 +11,15 @@ application {
     mainClass = "com.votingapp.MainKt"
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "17"
 }
+
 dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
