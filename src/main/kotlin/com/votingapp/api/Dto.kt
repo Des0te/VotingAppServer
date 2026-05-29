@@ -5,6 +5,7 @@ import com.votingapp.domain.Poll
 import com.votingapp.domain.PollResults
 import com.votingapp.domain.User
 import kotlinx.serialization.Serializable
+import java.time.Instant
 
 @Serializable
 data class RegisterRequest(
@@ -76,6 +77,7 @@ data class PollResponse(
     val anonymous: Boolean,
     val authorId: String,
     val maxChoices: Int,
+    val status: String,
     val options: List<OptionResponse>,
 )
 
@@ -116,8 +118,18 @@ fun Poll.toResponse() = PollResponse(
     anonymous = anonymous,
     authorId = authorId.toString(),
     maxChoices = maxChoices,
+    status = status(),
     options = options.map { OptionResponse(it.id.toString(), it.text) },
 )
+
+private fun Poll.status(): String {
+    val now = Instant.now()
+    return when {
+        now.isBefore(startsAt) -> "SOON"
+        now.isAfter(endsAt) -> "FINISHED"
+        else -> "ACTIVE"
+    }
+}
 
 fun PollResults.toResponse() = ResultsResponse(
     pollId = pollId.toString(),
